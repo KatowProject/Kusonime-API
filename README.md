@@ -42,7 +42,7 @@ Get Status Kusonime
 /
 ```
 
-example : https://mangamint.kaedenoki.net/api/
+**example** : https://kusonime-scrapper.glitch.me/api/
 
 ## Home / Page
 
