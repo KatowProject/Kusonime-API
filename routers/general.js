@@ -210,8 +210,8 @@ router.get('/seasons', async (req, res) => {
 
             title = $(e).text();
             link = {
-                endpoint: $(e).attr('href'),
-                url: $(e).attr('href').replace('https://kusonime.com/', '')
+                endpoint: $(e).attr('href').replace('https://kusonime.com/', ''),
+                url: $(e).attr('href')
             };
 
 
