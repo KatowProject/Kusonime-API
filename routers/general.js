@@ -151,7 +151,7 @@ router.get('/genres', async (req, res) => {
 });
 
 /* Genre */
-router.get('/genre/:plug/:page', async (req, res) => {
+router.get('/genres/:plug/:page', async (req, res) => {
     try {
 
         /* Get Data */
@@ -236,7 +236,7 @@ router.get('/seasons', async (req, res) => {
 });
 
 /* Season */
-router.get('/season/:plug/:page', async (req, res) => {
+router.get('/seasons/:plug/:page', async (req, res) => {
     try {
 
         /* Get Data */
