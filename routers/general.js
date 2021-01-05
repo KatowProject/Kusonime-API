@@ -280,6 +280,48 @@ router.get('/seasons/:plug/:page', async (req, res) => {
     };
 });
 
+/* Cari */
+router.get('/cari/:plug', async (req, res) => {
+    try {
+
+        const plug = req.params.plug;
+
+        const response = await Axios(`?s=${plug}`);
+        const $ = cheerio.load(response.data);
+        const element = $('.venutama');
+
+            /* Scrap Data */
+            let anime_list = [];
+            let title, release, genre, link;
+    
+            $(element).find('.kover').each((i, e) => {
+    
+            title = $(e).find('.content > h2 > a').attr('title');
+            release = $(e).find('.content > p').text().trim().split('Genre')[0].split('Admin')[1].trim();
+            genre = $(e).find('.content > p').text().trim().split('Genre')[1].trim().split(', ');
+            link = {
+                    endpoint: $(e).find('.thumb > a').attr('href').replace('https://kusonime.com/', ''),
+                    url : $(e).find('.thumb > a').attr('href'),
+                    thumbnail: $(e).find('.thumbz > img').attr('src')
+                    };
+            
+                anime_list.push({
+                    title,
+                    release,
+                    genre,
+                    link
+                });
+    
+            });
+    
+            res.send(anime_list);
+        } catch (err) {
+            
+            res.send({success: false, error: err.message});
+
+        };
+});
+
 
 
 module.exports = router;
