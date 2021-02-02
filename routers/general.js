@@ -328,7 +328,7 @@ router.get('/cari/:plug', async (req, res) => {
         const plug = req.params.plug;
 
         /* Get data from cache*/
-        const caches = await cache.search.get(`${plug}`)
+        const caches = await cache.search.get(`${plug.toLowerCase()}`)
         const hit = (Date.now() - (caches?.timestamp || 0) < (cacheTime.search * 3600000)) ? true : false
         if (hit) return res.send(caches)
 
@@ -360,8 +360,8 @@ router.get('/cari/:plug', async (req, res) => {
     
             });
 
-        await cache.search.set(`${plug}`, { data: anime_list, timestamp: Date.now()})
-        const cacheData = cache.search.get(`${plug}`)
+        await cache.search.set(`${plug.toLowerCase()}`, { data: anime_list, timestamp: Date.now()})
+        const cacheData = cache.search.get(`${plug.toLowerCase()}`)
         res.send(cacheData);
         } catch (err) {
             
