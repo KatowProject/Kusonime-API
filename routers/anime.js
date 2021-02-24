@@ -31,19 +31,30 @@ router.get('/:plug', async (req, res) => {
         });
             
         
-        let temp_res = [];
-        $(element).find('.smokeurl').each((ind, ele) => {
-                let temp_dl = [];
+        const ress = [];
+        $(element).find('.smokeddl').each((ind, ele) => {
 
-                $(ele).find('a').each((i, e) => {
-                    temp_dl.push({platform: $(e).text(), link: $(e).attr('href')});
+            const temp_res = [];
+            $(ele).find('.smokeurl').each((i, e) => {
+                
+                const temp_dl = [];
+                $(e).find('a').each((ix, ex) => {
+                    temp_dl.push({
+                        platform: $(ex).text(),
+                        link: $(ex).attr('href')
+                    });
                 });
 
                 temp_res.push({
-                    resolusi: $(ele).find('strong').text().toLowerCase(),
+                    resolusi: $(e).find('strong').text().toLowerCase(),
                     link_download: temp_dl
                 });
+            });
+
+            ress.push([$(ele).find('.smokettl').text(), temp_res]);
+
         });
+
 
         obj.title = $(element).find('.post-thumb > img').attr('title');
         obj.thumbnail = $(element).find('.post-thumb > img').attr('src');
@@ -62,7 +73,10 @@ router.get('/:plug', async (req, res) => {
         obj.durasi = $(element).find('.info > p:nth-of-type(9)').text().split(':')[1].trim();
         obj.release = $(element).find('.info > p:nth-of-type(10)').text().split(':')[1].trim();
         obj.sinopsis = $(element).find('.lexot > p:nth-of-type(1)').text().trim();
-        obj.list_download = temp_res;
+
+        //just delete annoying div
+        ress.pop();
+        obj.list_download = ress;
 
 
         await cache.anime.set(`${plug}`, { data: obj, timestamp: Date.now()})
