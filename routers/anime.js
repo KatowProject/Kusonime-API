@@ -12,7 +12,7 @@ router.get('/:plug', async (req, res) => {
         /* Get data from cache*/
         const caches = await cache.anime.get(`${plug}`)
         const hit = (Date.now() - (caches?.timestamp || 0) < (cacheTime.anime * 3600000)) ? true : false
-        if (hit) return res.send(caches)
+        if (hit) return res.send(caches.data)
 
         const response = await Axios(plug);
         const $ = cheerio.load(response.data);
@@ -81,7 +81,7 @@ router.get('/:plug', async (req, res) => {
 
         await cache.anime.set(`${plug}`, { data: obj, timestamp: Date.now()})
         const cacheData = cache.anime.get(`${plug}`)
-        res.send(cacheData);
+        res.send(cacheData.data);
 
     } catch (error) {
 

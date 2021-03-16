@@ -33,7 +33,7 @@ router.get('/page/:page', async (req, res) => {
         /* Get data from cache */
         const caches = await cache.page.get(`${page}`)
         const hit = (Date.now() - (caches?.timestamp || 0) < (cacheTime.page * 3600000)) ? true : false
-        if (hit) return res.send(caches)
+        if (hit) return res.send(caches.data)
 
         /* scrap data */
         const response = await Axios(`/page/${page}`);
@@ -65,7 +65,7 @@ router.get('/page/:page', async (req, res) => {
 
         await cache.page.set(`${page}`, { data: anime_list, timestamp: Date.now()})
         const cacheData = cache.page.get(`${page}`)
-        res.send(cacheData);
+        res.send(cacheData.data);
         //console.log($('.kover:nth-of-type(2)').find('.thumb > a').attr('href'));
 
     } catch (err) {
@@ -84,7 +84,7 @@ router.get('/rekomendasi', async (req, res) => {
         /* Get data from cache*/
         const caches = await cache.rekomendasi.get('rekomendasi')
         const hit = (Date.now() - (caches?.timestamp || 0) < (cacheTime.rekomendasi * 3600000)) ? true : false
-        if (hit) return res.send(caches)
+        if (hit) return res.send(caches.data)
 
         /* Get Data */
         const response = await Axios('/');
@@ -113,7 +113,7 @@ router.get('/rekomendasi', async (req, res) => {
 
       await cache.rekomendasi.set('rekomendasi', { data: rekom, timestamp: Date.now()})
       const cacheData = cache.rekomendasi.get('rekomendasi')
-      res.send(cacheData);
+      res.send(cacheData.data);
 
     } catch (err) {
 
@@ -130,7 +130,7 @@ router.get('/genres', async (req, res) => {
         /* Get data from cache*/
         const caches = await cache.genres.get('genres')
         const hit = (Date.now() - (caches?.timestamp || 0) < (cacheTime.genres * 3600000)) ? true : false
-        if (hit) return res.send(caches)
+        if (hit) return res.send(caches.data)
 
         const response = await Axios('');
         const $ = cheerio.load(response.data);
@@ -161,7 +161,7 @@ router.get('/genres', async (req, res) => {
         listAnime.shift();
         await cache.genres.set('genres', { data: listAnime, timestamp: Date.now()})
         const cacheData = cache.genres.get('genres')
-        res.send(cacheData);
+        res.send(cacheData.data);
 
     } catch (err) {
         res.send({success: false, error: err.message});
@@ -181,7 +181,7 @@ router.get('/genres/:plug/:page', async (req, res) => {
         /* Get data from cache*/
         const caches = await cache.genres.get(`${plug}.${page}`)
         const hit = (Date.now() - (caches?.timestamp || 0) < (cacheTime.genres * 3600000)) ? true : false
-        if (hit) return res.send(caches)
+        if (hit) return res.send(caches.data)
 
         const response = await Axios(`genres/${plug}/page/${page}`);
         const $ = cheerio.load(response.data);
@@ -213,7 +213,7 @@ router.get('/genres/:plug/:page', async (req, res) => {
 
       await cache.genres.set(`${plug}.${page}`, { data: anime_list, timestamp: Date.now()})
       const cacheData = cache.genres.get(`${plug}.${page}`)
-      res.send(cacheData);
+      res.send(cacheData.data);
 
     } catch (error) {
 
@@ -229,7 +229,7 @@ router.get('/seasons', async (req, res) => {
         /* Get data from cache*/
         const caches = await cache.seasons.get('seasons')
         const hit = (Date.now() - (caches?.timestamp || 0) < (cacheTime.seasons * 3600000)) ? true : false
-        if (hit) return res.send(caches)
+        if (hit) return res.send(caches.data)
 
         const response = await Axios('');
         const $ = cheerio.load(response.data);
@@ -260,7 +260,7 @@ router.get('/seasons', async (req, res) => {
         listAnime.shift();
         await cache.seasons.set('seasons', { data: listAnime, timestamp: Date.now()})
         const cacheData = cache.seasons.get('seasons')
-        res.send(cacheData);
+        res.send(cacheData.data);
 
     } catch (err) {
 
@@ -280,7 +280,7 @@ router.get('/seasons/:plug/:page', async (req, res) => {
         /* Get data from cache*/
         const caches = await cache.seasons.get(`${plug}.${page}`)
         const hit = (Date.now() - (caches?.timestamp || 0) < (cacheTime.seasons * 3600000)) ? true : false
-        if (hit) return res.send(caches)
+        if (hit) return res.send(caches.data)
 
         const response = await Axios(`seasons/${plug}/page/${page}`);
         const $ = cheerio.load(response.data);
@@ -312,7 +312,7 @@ router.get('/seasons/:plug/:page', async (req, res) => {
 
       await cache.seasons.set(`${plug}.${page}`, { data: anime_list, timestamp: Date.now()})
       const cacheData = cache.seasons.get(`${plug}.${page}`)
-      res.send(cacheData);
+      res.send(cacheData.data);
 
     } catch (error) {
 
@@ -330,7 +330,7 @@ router.get('/cari/:plug', async (req, res) => {
         /* Get data from cache*/
         const caches = await cache.search.get(`${plug.toLowerCase()}`)
         const hit = (Date.now() - (caches?.timestamp || 0) < (cacheTime.search * 3600000)) ? true : false
-        if (hit) return res.send(caches)
+        if (hit) return res.send(caches.data)
 
         const response = await Axios(`?s=${plug}`);
         const $ = cheerio.load(response.data);
@@ -362,7 +362,7 @@ router.get('/cari/:plug', async (req, res) => {
 
         await cache.search.set(`${plug.toLowerCase()}`, { data: anime_list, timestamp: Date.now()})
         const cacheData = cache.search.get(`${plug.toLowerCase()}`)
-        res.send(cacheData);
+        res.send(cacheData.data);
         } catch (err) {
             
             res.send({success: false, error: err.message});
