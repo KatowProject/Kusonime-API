@@ -96,9 +96,353 @@ const anime = async (req, res) => {
 
         const $ = cheerio.load(response.data);
         const anime = {};
+
+        anime.title = $('.jdlz').text().trim();
+        anime.thumbnail = $('.post-thumb').find('img').attr('src');
+        $('.info').find('p').each((i, el) => {
+            const key = $(el).find('b').text().toLowerCase().trim().replace(' ', '_');
+            // remove <b> tag
+            $(el).find('b').remove();
+
+            const value = $(el).text().split(':').pop().trim();
+
+            anime[key] = value === '' ? null : value;
+        });
+        anime.sinopsis = $('.lexot > p').text().trim();
+
+        anime.list_download = [];
+        $('#dl').find('.smokeddlrh').each((i, el) => {
+            const download_link = [];
+            const title = $(el).find('.smokettlrh').text().trim();
+
+            $('.smokeurlrh').each((j, ele) => {
+                const type = $(ele).find('strong').text().trim();
+
+                const links = [];
+                $(ele).find('a').each((k, elem) => {
+                    const name = $(elem).text().trim();
+                    const url = $(elem).attr('href');
+
+                    links.push({ name, url });
+                });
+
+                download_link.push({ type, links });
+            });
+
+            anime.list_download.push({ title, download_link });
+        });
+
+        return res.json({ success: true, data: anime });
     } catch (error) {
         res.status(500).json({ success: false, error: error.message });
     }
 }
 
-module.exports = { home, anime };
+const listAnimeBatch = async (req, res) => {
+    try {
+        const response = await request.get('list-anime-batch-sub-indo');
+
+        const $ = cheerio.load(response.data);
+
+        const listAnime = [];
+        $("#abtext").find('.bariskelom').each((i, el) => {
+            const abjad = $(el).find('.barispenz').text().trim();
+
+            const animes = [];
+            $(el).find('.jdlbar').find('ul').each((j, ele) => {
+                const name = $(ele).find('a').text().trim();
+                const url = $(ele).find('a').attr('href');
+
+                animes.push({ name, url });
+            });
+
+            listAnime.push({ abjad, animes });
+        });
+
+        return res.json({ success: true, data: listAnime });
+    } catch (error) {
+        res.status(500).json({ success: false, error: error.message });
+    }
+}
+
+const listAnimeBluerayDisk = async (req, res) => {
+    try {
+        const response = await request.get('anime-list-bd');
+
+        const $ = cheerio.load(response.data);
+
+        const listAnime = [];
+        $("#abtext").find('.bariskelom').each((i, el) => {
+            const abjad = $(el).find('.barispenz').text().trim();
+
+            const animes = [];
+            $(el).find('.jdlbar').find('ul').each((j, ele) => {
+                const name = $(ele).find('a').text().trim();
+                const url = $(ele).find('a').attr('href');
+
+                animes.push({ name, url });
+            });
+
+            listAnime.push({ abjad, animes });
+        });
+
+        return res.json({ success: true, data: listAnimeBatch });
+    } catch (error) {
+        res.status(500).json({ success: false, error: error.message });
+    }
+}
+
+const animeMovieList = async (req, res) => {
+    try {
+        const response = await request.get('anime-movie-list');
+
+        const $ = cheerio.load(response.data);
+
+        const listAnime = [];
+        $("#abtext").find('.bariskelom').each((i, el) => {
+            const abjad = $(el).find('.barispenz').text().trim();
+
+            const animes = [];
+            $(el).find('.jdlbar').find('ul').each((j, ele) => {
+                const name = $(ele).find('a').text().trim();
+                const url = $(ele).find('a').attr('href');
+
+                animes.push({ name, url });
+            });
+
+            listAnime.push({ abjad, animes });
+        });
+
+        return res.json({ success: true, data: listAnime });
+    } catch (error) {
+        res.status(500).json({ success: false, error: error.message });
+    }
+}
+
+const liveAction = async (req, res) => {
+    try {
+        const response = await request.get('daftar-live-action');
+
+        const $ = cheerio.load(response.data);
+
+        const listAnime = [];
+        $("#abtext").find('.bariskelom').each((i, el) => {
+            const abjad = $(el).find('.barispenz').text().trim();
+
+            const animes = [];
+            $(el).find('.jdlbar').find('ul').each((j, ele) => {
+                const name = $(ele).find('a').text().trim();
+                const url = $(ele).find('a').attr('href');
+
+                animes.push({ name, url });
+            });
+
+            listAnime.push({ abjad, animes });
+        });
+
+        return res.json({ success: true, data: listAnime });
+    } catch (error) {
+        res.status(500).json({ success: false, error: error.message });
+    }
+}
+
+const animeOVA = async (req, res) => {
+    try {
+        const response = await request.get('seasons/ova');
+        const $ = cheerio.load(response.data);
+
+        const listAnime = [];
+        $('.vezone').find('.venz').find(".kover").each((i, el) => {
+            const thumbnail = $(el).find('img').attr('src');
+            const title = $(el).find('.thumb').find('a').attr('title');
+            const url = $(el).find('.thumb').find('a').attr('href');
+            const endpoint = url.replace(process.env.BASE_URL, '');
+
+            const genres = [];
+            $(el).find('.content').find('p:nth-child(4)').find('a').each((j, ele) => {
+                const name = $(ele).text();
+                const url = $(ele).attr('href');
+                const endpoint = url.replace(process.env.BASE_URL, '');
+
+                genres.push({ name, url, endpoint });
+            });
+
+            listAnime.push({ title, thumbnail, genres, url, endpoint });
+        });
+
+        return res.json({ success: true, data: listAnime });
+    } catch (error) {
+        res.status(500).json({ success: false, error: error.message });
+    }
+}
+
+const animeSpecial = async (req, res) => {
+    try {
+        const response = await request.get('seasons/special');
+        const $ = cheerio.load(response.data);
+
+        const listAnime = [];
+        $('.vezone').find('.venz').find(".kover").each((i, el) => {
+            const thumbnail = $(el).find('img').attr('src');
+            const title = $(el).find('.thumb').find('a').attr('title');
+            const url = $(el).find('.thumb').find('a').attr('href');
+            const endpoint = url.replace(process.env.BASE_URL, '');
+
+            const genres = [];
+            $(el).find('.content').find('p:nth-child(4)').find('a').each((j, ele) => {
+                const name = $(ele).text();
+                const url = $(ele).attr('href');
+                const endpoint = url.replace(process.env.BASE_URL, '');
+
+                genres.push({ name, url, endpoint });
+            });
+
+            listAnime.push({ title, thumbnail, genres, url, endpoint });
+        });
+
+        return res.json({ success: true, data: listAnime });
+    } catch (error) {
+        res.status(500).json({ success: false, error: error.message });
+    }
+}
+
+const animeONA = async (req, res) => {
+    try {
+        const response = await request.get('seasons/ona');
+        const $ = cheerio.load(response.data);
+
+        const listAnime = [];
+        $('.vezone').find('.venz').find(".kover").each((i, el) => {
+            const thumbnail = $(el).find('img').attr('src');
+            const title = $(el).find('.thumb').find('a').attr('title');
+            const url = $(el).find('.thumb').find('a').attr('href');
+            const endpoint = url.replace(process.env.BASE_URL, '');
+
+            const genres = [];
+            $(el).find('.content').find('p:nth-child(4)').find('a').each((j, ele) => {
+                const name = $(ele).text();
+                const url = $(ele).attr('href');
+                const endpoint = url.replace(process.env.BASE_URL, '');
+
+                genres.push({ name, url, endpoint });
+            });
+
+            listAnime.push({ title, thumbnail, genres, url, endpoint });
+        });
+
+        return res.json({ success: true, data: listAnime });
+    } catch (error) {
+        res.status(500).json({ success: false, error: error.message });
+    }
+}
+
+const genres = async (req, res) => {
+    try {
+        const response = await request.get('genres');
+        const $ = cheerio.load(response.data);
+
+        const listGenres = [];
+        $('.genres').find('li').each((i, el) => {
+            const title = $(el).find('a').text();
+            const url = $(el).find('a').attr('href');
+
+            if (!title || !url) return;
+
+            listGenres.push({ title, url });
+        });
+
+        return res.json({ success: true, data: listGenres });
+    } catch (error) {
+        res.status(500).json({ success: false, error: error.message });
+    }
+}
+
+const listAnimeGenres = async (req, res) => {
+    try {
+        const { endpoint } = req.params;
+        const { page = 1 } = req.params;
+
+        const response = await request.get(`genres/${endpoint}/page/${page}`);
+        const $ = cheerio.load(response.data);
+
+        const listAnime = [];
+        $('.vezone').find('.venz').find(".kover").each((i, el) => {
+            const thumbnail = $(el).find('img').attr('src');
+            const title = $(el).find('.thumb').find('a').attr('title');
+            const url = $(el).find('.thumb').find('a').attr('href');
+            const endpoint = url.replace(process.env.BASE_URL, '');
+
+            const genres = [];
+            $(el).find('.content').find('p:nth-child(4)').find('a').each((j, ele) => {
+                const name = $(ele).text();
+                const url = $(ele).attr('href');
+                const endpoint = url.replace(process.env.BASE_URL, '');
+
+                genres.push({ name, url, endpoint });
+            });
+
+            listAnime.push({ title, thumbnail, genres, url, endpoint });
+        });
+
+        return res.json({ success: true, data: listAnime });
+    } catch (error) {
+        res.status(500).json({ success: false, error: error.message });
+    }
+}
+
+const seasons = async (req, res) => {
+    try {
+        const response = await request.get('seasons-list');
+        const $ = cheerio.load(response.data);
+
+        const listSeason = [];
+        $('.genres').find('li').each((i, el) => {
+            const title = $(el).find('a').text();
+            const url = $(el).find('a').attr('href');
+
+            if (!title || !url) return;
+
+            listSeason.push({ title, url });
+        });
+
+        return res.json({ success: true, data: listSeason });
+    } catch (error) {
+        res.status(500).json({ success: false, error: error.message });
+    }
+}
+
+const listAnimeSeasons = async (req, res) => {
+    try {
+        const { endpoint } = req.params;
+        const { page = 1 } = req.params;
+
+        const response = await request.get(`seasons/${endpoint}/page/${page}`);
+        const $ = cheerio.load(response.data);
+
+        const listAnime = [];
+        $('.vezone').find('.venz').find(".kover").each((i, el) => {
+            const thumbnail = $(el).find('img').attr('src');
+            const title = $(el).find('.thumb').find('a').attr('title');
+            const url = $(el).find('.thumb').find('a').attr('href');
+            const endpoint = url.replace(process.env.BASE_URL, '');
+
+            const genres = [];
+            $(el).find('.content').find('p:nth-child(4)').find('a').each((j, ele) => {
+                const name = $(ele).text();
+                const url = $(ele).attr('href');
+                const endpoint = url.replace(process.env.BASE_URL, '');
+
+                genres.push({ name, url, endpoint });
+            });
+
+            listAnime.push({ title, thumbnail, genres, url, endpoint });
+        });
+
+        return res.json({ success: true, data: listAnime });
+    } catch (error) {
+        res.status(500).json({ success: false, error: error.message });
+    }
+}
+
+
+module.exports = { home, anime, listAnimeBatch, listAnimeBluerayDisk, animeMovieList, liveAction, animeONA, animeSpecial, animeOVA, genres, listAnimeGenres, seasons, listAnimeSeasons };
