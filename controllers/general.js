@@ -138,6 +138,12 @@ const anime = async (req, res) => {
     }
 }
 
+/**
+ * 
+ * @param {express.Request} req 
+ * @param {express.Response} res 
+ * @returns 
+ */
 const listAnimeBatch = async (req, res) => {
     try {
         const response = await request.get('list-anime-batch-sub-indo');
@@ -165,6 +171,12 @@ const listAnimeBatch = async (req, res) => {
     }
 }
 
+/**
+ * 
+ * @param {express.Request} req 
+ * @param {express.Response} res 
+ * @returns 
+ */
 const listAnimeBluerayDisk = async (req, res) => {
     try {
         const response = await request.get('anime-list-bd');
@@ -192,6 +204,12 @@ const listAnimeBluerayDisk = async (req, res) => {
     }
 }
 
+/**
+ * 
+ * @param {express.Request} req 
+ * @param {express.Response} res 
+ * @returns 
+ */
 const animeMovieList = async (req, res) => {
     try {
         const response = await request.get('anime-movie-list');
@@ -219,6 +237,11 @@ const animeMovieList = async (req, res) => {
     }
 }
 
+/**
+ * @param {express.Request} req 
+ * @param {express.Response} res 
+ * @returns 
+ */
 const liveAction = async (req, res) => {
     try {
         const response = await request.get('daftar-live-action');
@@ -246,6 +269,12 @@ const liveAction = async (req, res) => {
     }
 }
 
+/**
+ * 
+ * @param {express.Request} req 
+ * @param {express.Response} res 
+ * @returns 
+ */
 const animeOVA = async (req, res) => {
     try {
         const response = await request.get('seasons/ova');
@@ -276,6 +305,12 @@ const animeOVA = async (req, res) => {
     }
 }
 
+/**
+ * 
+ * @param {express.Request} req 
+ * @param {express.Response} res 
+ * @returns 
+ */
 const animeSpecial = async (req, res) => {
     try {
         const response = await request.get('seasons/special');
@@ -306,6 +341,12 @@ const animeSpecial = async (req, res) => {
     }
 }
 
+/**
+ * 
+ * @param {express.Request} req 
+ * @param {express.Response} res 
+ * @returns 
+ */
 const animeONA = async (req, res) => {
     try {
         const response = await request.get('seasons/ona');
@@ -336,6 +377,12 @@ const animeONA = async (req, res) => {
     }
 }
 
+/**
+ * 
+ * @param {express.Request} req 
+ * @param {express.Response} res 
+ * @returns 
+ */
 const genres = async (req, res) => {
     try {
         const response = await request.get('genres');
@@ -357,6 +404,12 @@ const genres = async (req, res) => {
     }
 }
 
+/**
+ * 
+ * @param {express.Request} req
+ * @param {express.Response} res 
+ * @returns 
+ */
 const listAnimeGenres = async (req, res) => {
     try {
         const { endpoint } = req.params;
@@ -390,6 +443,13 @@ const listAnimeGenres = async (req, res) => {
     }
 }
 
+
+/**
+ * 
+ * @param {express.Request} req 
+ * @param {express.Response} res 
+ * @returns 
+ */
 const seasons = async (req, res) => {
     try {
         const response = await request.get('seasons-list');
@@ -411,6 +471,12 @@ const seasons = async (req, res) => {
     }
 }
 
+/**
+ * 
+ * @param {express.Request} req 
+ * @param {express.Response} res 
+ * @returns 
+ */
 const listAnimeSeasons = async (req, res) => {
     try {
         const { endpoint } = req.params;
@@ -444,5 +510,56 @@ const listAnimeSeasons = async (req, res) => {
     }
 }
 
+/**
+ * 
+ * @param {express.Request} req 
+ * @param {express.Response} res 
+ */
+const search = async (req, res) => {
+    try {
+        const query = req.query.s;
+        const page = req.params.page || 1;
 
-module.exports = { home, anime, listAnimeBatch, listAnimeBluerayDisk, animeMovieList, liveAction, animeONA, animeSpecial, animeOVA, genres, listAnimeGenres, seasons, listAnimeSeasons };
+        if (!query) return res.status(400).json({ success: false, error: 'Query is required' });
+
+        const response = await request.get(`page/${page}/?s=${query}&post_type=post`);
+        const $ = cheerio.load(response.data);
+
+        const data = {};
+
+        data.listAnime = [];
+        $('.vezone').find('.venz').find(".kover").each((i, el) => {
+            const thumbnail = $(el).find('img').attr('src');
+            const title = $(el).find('.thumb').find('a').attr('title');
+            const url = $(el).find('.thumb').find('a').attr('href');
+            const endpoint = url.replace(process.env.BASE_URL, '');
+
+            const genres = [];
+            $(el).find('.content').find('p:nth-child(4)').find('a').each((j, ele) => {
+                const name = $(ele).text();
+                const url = $(ele).attr('href');
+                const endpoint = url.replace(process.env.BASE_URL, '');
+
+                genres.push({ name, url, endpoint });
+            });
+
+            data.listAnime.push({ title, thumbnail, genres, url, endpoint });
+        });
+
+        data.pagination = [];
+        $(".pagination").find('a').each((i, el) => {
+            const name = $(el).text();
+            const url = $(el).attr('href');
+            const endpoint = url.replace(process.env.BASE_URL, '');
+
+            data.pagination.push({ name, url, endpoint });
+        });
+
+        return res.json({ success: true, data });
+
+    } catch (err) {
+        res.status(500).json({ success: false, error: err.message });
+    }
+}
+
+module.exports = { home, anime, listAnimeBatch, listAnimeBluerayDisk, animeMovieList, liveAction, animeONA, animeSpecial, animeOVA, genres, listAnimeGenres, seasons, listAnimeSeasons, search };

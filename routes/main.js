@@ -19,5 +19,7 @@ router.get('/seasons', controller.seasons);
 router.get('/seasons/:endpoint', controller.listAnimeSeasons);
 router.get('/seasons/:endpoint/page/:page', controller.listAnimeSeasons);
 router.get('/anime/:endpoint', controller.anime);
+router.get('/search/', controller.search);
+router.get('/search/page/:page', controller.search);
 
 module.exports = router;
